@@ -1,0 +1,310 @@
+#!/usr/bin/bash
+
+./modify -h
+
+
+echo -e "\n===========================   1. NO RECURSION    =========================================
+"
+mkdir t1
+touch t1/f1
+ls
+
+
+echo -e "\n---------------------------   1.1 UPERCASE   -----------------------------------
+./modify -u t1/f1
+        "
+
+echo -e "Before: "
+ls t1/
+
+./modify -u t1/f1
+
+echo -e "
+After: "
+ls t1/
+
+echo -e "\n---------------------------   1.2 LOWERCASE   -----------------------------------
+./modify -l t1/F1
+        "
+echo -e "Before: "
+ls t1/
+
+./modify -l t1/F1
+
+echo -e "
+After: "
+ls t1/
+
+echo -e  "\n---------------------------   1.3 SED PATTERN   ----------------------------------
+./modify 's/f/sed_name/g' t1/f1
+        "
+
+echo -e "Before: "
+ls t1/
+
+./modify 's/f/sed_name/g' t1/f1
+
+echo -e "
+After: "
+ls t1
+
+
+echo -e  "\n---------------------------   1.4 PASS MORE THAN ONE FILENAME   ------------------"
+echo -e  "Touch t1/t1.c t1/D2.cpp:" 
+touch t1/t1.c
+touch t1/D2.cpp
+
+echo -e "\n./modify -u t1/sed_name1 t1/t1.c t1/D2.cpp
+        "
+echo -e "Before: "
+ls t1/
+
+./modify -u t1/sed_name1 t1/t1.c t1/D2.cpp
+
+echo -e "
+After: "
+ls t1
+
+rm -R t1/
+
+echo -e "\n==============================   2. RECURSION    ===============================================
+"
+mkdir t2
+touch t2/file1
+mkdir t2/sub_t2
+touch t2/sub_t2/file2
+
+echo -e  "\n---------------------------   2.1 WHOLE DIRECTORY UPERCASE   -----------------------------------------
+./modify -r -u t2
+        "
+echo -e "Before: "
+ls -R t2
+
+./modify -r -u t2
+
+echo -e "
+After: "
+ls -R t2
+
+echo -e  "\n---------------------------   2.2 WHOLE DIRECTORY LOWERCASE   ---------------------------------------
+./modify -r -l t2
+        "
+
+echo -e "Before: "
+ls -R t2/
+
+./modify -r -l t2
+
+echo -e "
+After: "
+ls -R t2/
+
+
+echo -e "\n---------------------------  2.3 WHOLE DIRECTORY SED PATTERN   --------------------------------------
+./modify -r 's/file/jive/g' t2
+        "
+echo -e "Before: "
+ls -R t2/
+
+./modify -r 's/file/jive/g' t2
+
+echo -e "
+After: "
+ls -R t2/
+
+
+echo -e  "\n---------------------------   2.4 SINGLE FILENAME   ---------------------------------------------
+./modify -r -u t2/jive1
+        "
+echo -e "Before: "
+ls -R t2/
+
+./modify -r -u t2/jive1
+
+echo -e "
+After: "
+ls -R t2/
+
+rm -R t2
+
+echo -e "\n==============================   3. EDGE CASES   =============================================
+"
+
+mkdir t3
+
+echo -e "\n---------------------------   3.1 NON EXISTING FILE  ------------------------------------
+./modify -u t3/non_existing.txt
+        "
+
+echo -e "Before: "
+ls t3/
+./modify -u t3/non_existing.txt
+echo -e "
+After: "
+ls t3/
+
+echo -e  "\n---------------------------   3.2 EMPTY DIRECTORY RECURSION   -----------------------------
+./modify -r -u t3/
+        "
+
+echo -e "Before: "
+ls t3/
+
+./modify -r -u t3/
+echo -e "
+After: "
+ls t3/
+
+
+touch t3/file3.txt
+echo -e "\n---------------------------   3.3 LOWERCASE A FILE ALREADY IN LOWERCASE   -----------------
+touch t3/file3.txt
+./modify -l t3/file3.txt
+        "
+echo -e "Before: "
+ls t3/
+./modify -l t3/file3.txt
+echo -e "
+After: "
+ls t3/
+
+
+echo -e  "\n---------------------------   3.4 -l -u AT THE SAME TIME  -----------------------------------------------
+./modify -l -u t3/file3.txt
+        "
+
+echo -e "Before: "
+ls t3/
+./modify -l -u t3/file3.txt
+echo -e "
+After: "
+ls t3/
+
+rm -R t3
+
+
+
+echo -e "\n==============================   4. PROBLEM FILENAMES    =======================================
+"
+mkdir t4
+touch t4/-minus
+touch t4/--double_minus
+touch t4/'space file'
+touch t4/'-minus space'
+touch t4/1234
+touch t4/'<|\:),&'
+touch t4/'AbCd<|\:),&'
+
+echo -e "\n---------------------------   4.1 - MINUS AT THE BEGINNING  --------------------------
+./modify -u t4/-minus
+./modify -u t4/--double_minus
+        "
+echo -e "Before: "
+ls t4/
+./modify -u t4/-minus
+./modify -u t4/--double_minus
+echo -e "
+After: "
+ls t4/
+
+
+echo -e "\n---------------------------   4.2 - SPACE IN FILENAME ---------------------------
+        ./modify -u t4/'space file'
+        ./modify -u t4/'-minus space'
+        "
+echo -e "Before: "
+ls t4/
+./modify -u t4/'space file'
+./modify -u t4/'-minus space'
+echo -e "
+After: "
+ls t4/
+
+echo -e "\n---------------------------   4.3 - NUMBERS ONLY -------------------------------
+./modify -l t4/1234
+        "
+echo -e "Before: "
+ls t4/
+./modify -l t4/1234
+
+echo -e "
+After: "
+ls t4/
+
+
+echo -e "\n---------------------------   4.4 - SYMBOLS ONLY --------------------------------------
+./modify -l t4/<|\:),&
+        "
+echo -e "Before: "
+ls t4/
+./modify -l t4/'<|\:),&'
+echo -e "
+After: "
+ls t4/
+
+echo -e "\n---------------------------   4.5 - SED PATTERN APPLIED FOR ONE FILE ------------------
+./modify -r 's/MINUS/m/g' t4/-MINUS SPACE
+        "
+echo -e "Before: "
+ls t4/
+./modify -r 's/MINUS/m/g' t4/'-MINUS SPACE'
+echo -e "
+After: "
+ls t4/
+
+
+echo -e "\n---------------------------   4.6 - APPLY SED PATTERN TO THE DIRECTORY   ------------------
+        ./modify -r 's/MINUS/m/g' t4/
+        "
+
+echo -e "Before: "
+ls t4/
+./modify -r 's/MINUS/m/g' t4
+echo -e "
+After: "
+ls t4/
+
+rm -R t4
+
+mkdir -- -t4
+touch -- ./-t4/-file4.txt
+echo -e "\n---------------------------   4.7 - DIRECTORY NAME STARTS WITH MINUS   ------------------
+        "
+
+echo -e "
+./modify -r -u -t4
+"
+echo -e "Before:"
+ls -R ./-t4
+
+./modify -r -u -t4
+
+echo -e "
+After: "
+ls -R ./-t4
+
+
+rm -R ./-t4
+
+echo -e "\n---------------------------   4.8 - FILE START WITH DOT   ------------------
+        "
+mkdir test
+touch test/.abcd.c
+
+echo -e "
+touch test/.abcd.c
+./modify -u test/.abcd.c
+"
+echo -e "Before:"
+ls -R -a ./test
+
+./modify -u test/.abcd.c
+
+echo -e "
+After: "
+ls -R -a ./test
+
+rm -R ./test
+
+
+
