@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include <stdbool.h>
 
-#define NUM_CHILD 5
+#define NUM_CHILD 7
 #define WITH_SIGNALS
 
 int interrupt = 0;
@@ -22,7 +22,7 @@ void interrupt_message() {
 }
 #endif
 
-// Terminates all crated children - sending SIGTERM signal.
+// Terminates all created children - sending SIGTERM signal.
 void terminate(int fail_number) {
    for (int i = 0; i <= fail_number; i++) {
       printf("parent[%d]: sending SIGTERM signal to child[%d].\n", getpid(), children_pids[i]);
@@ -66,8 +66,8 @@ int main() {
    for (int i = 0; i < _NSIG; i++) // NSIG is the total number of signals defined
       signal(i, SIG_IGN);
 
-   signal(SIGCHLD, SIG_DFL); // SIG_DFL is the default signal
-   signal(SIGINT, trigger_interrupt); // Interrupt handler.
+   signal(SIGCHLD, SIG_DFL); 
+   signal(SIGINT, trigger_interrupt); 
    #endif
 
    for (int i = 0; i < NUM_CHILD; i++) {
